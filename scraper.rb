@@ -1,17 +1,10 @@
-class WordScraper
+class Scraper
 
   require 'rubygems'
   require 'capybara'
-  require 'capybara/poltergeist'
-
-Capybara.javascript_driver = :poltergeist
-
-Capybara.register_driver :poltergeist do |app|
-  Capybara::Poltergeist::Driver.new(app)
-end
 
   def initialize
-    @s = WordScraper::Capybara::Session.new :poltergeist
+    @s = WordScraper::Capybara::Session.new :selenium
   end
 
   def session
@@ -36,23 +29,25 @@ end
       all_words << words
       session.evaluate_script('window.history.back()')
       sleep 2
-      if session.has_link? 'NEXT'
-        session.click_link 'NEXT'
-        session.all(:css, ".result_link").collect {|link| link.text}
-        links = session.all(:css, ".result_link").collect {|link| link.text}
-      end
+      redo if session.has_link? 'NEXT'
+    end
+    if session.has_link? 'NEXT'
+      session.click_link 'NEXT'
+      session.all(:css, ".result_link").collect {|link| link.text}
+      links = session.all(:css, ".result_link").collect {|link| link.text}
       redo
     end
 
     all_words.delete_if {|word| word.length > 7 }
     all_words.map! {|word| word.gsub(/[.,\ '&`~"$!?]/, '')}    #removing symbols and spaces from words
-    File.open("dictionary.txt","w") {|f| f.puts(all_words)}
+    File.open("dictionary.rb","a") {|f| f.puts(all_words)}
   end
 
   def read_file 
-    dictionary = File.new('dictionary.rb', 'r')
-    dictionary.each do |word|
-      puts word
+    File.open('dictionary.rb', 'r') do |x|
+      while line = x.gets
+        puts line[0]
+      end
     end
   end
 end
