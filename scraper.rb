@@ -12,7 +12,7 @@ class Scraper
   end
 
   def visit_site
-    session.visit 'http://dictionary.reference.com/list/'
+    session.visit 'http://www.merriam-webster.com/browse/dictionary/a/a.htm'
   end
 
   def screenshot            # troubleshooting helper from when I was using headless browser.
@@ -20,24 +20,30 @@ class Scraper
   end
 
   def scrape_words
-    links = session.all(:css, ".result_link").collect {|link| link.text}
-    last_link = links.last
-    all_words = session.all(:css, ".result_link").collect {|link| link.text}
-    links.each do |link|
-      session.click_link link
-      sleep 2
-      words = session.all(:css, ".result_link").collect { |word| word.text }
-      all_words << words
-      session.evaluate_script('window.history.back()')
-      if link == last_link
-        session.click_link 'NEXT'
-        links = session.all(:css, ".result_link").collect {|link| link.text}
-        all_words.delete_if {|word| word.length > 7 } 
-        File.open("dictionary.rb","a") {|f| f.puts(all_words)}
-        redo
-      end
-    end 
+    puts "foo"
+    sleep 3
+    session.click_link 'Skip This Ad' if session.has_link? 'Skip This Ad'
+    session.within session.all(:css, '.pagination')[0] { session.has_link? 'Next' }
+    session.click_link 'Skip This Ad' if session.has_link? 'Skip This Ad'
+    sleep 3
+    too_many_words = session.all(:xpath, "//ol['@class=entries']").collect {|word| word.text}
+    words = too_many_words[4].split
+    words.delete_if {|word| word.length > 7 }
+    words.map! {|word| word.gsub(/[.,\ '&`~"$!?-]/,'')}
+    File.open("dictionary.rb","a") {|f| f.puts(words)}
+    puts "***************"
+    session.within session.all(:css, '.pagination')[0] { session.click_link 'Next' }
+    sleep 3
+    puts "bar"
   end
+
+  def repeat
+    1000.times do
+      scrape_words
+    end
+  end
+
+
 
   def read_file                                                 #learning about File class and IO
     File.open('dictionary.rb', 'r') do |x|
