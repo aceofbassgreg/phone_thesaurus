@@ -1,4 +1,8 @@
-#I tried a scraper w/ a headless browser but got more errors so abandoned it. left here
+#I tried a scraper w/ a headless browser but got more errors so abandoned it. left here to troubleshoot later / gain 
+#more experience with headless automation.
+
+
+
 class HeadlessScraper
 
   require 'rubygems'

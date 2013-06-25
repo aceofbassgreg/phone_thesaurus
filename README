@@ -1,0 +1,19 @@
+This project is an attempt to write a script that processes phone numbers into words. It's been massively 
+educational, considering a) it's my first real experience writing scripts, b) it's my first experience working with 
+command line arguments, and c) it's my first experience grappling with algorithms and dynamic programming concepts.
+I've been looking for a challenge like this since most of my experience basically involves writing Rails apps.
+
+At this juncture (6/25/13) I have a long ways to go. I needed a default dictionary (though my script accepts an optional argument
+where a user can specify their dictionary), and instead of downloading a word list, I decided to write a bot to scrape the 
+Merriam-Webster website for all words under seven characters (since a phone number replacement would be 7 or less characters). This was pretty easy, and I was able to run multiple bots at once while studying / working on other aspects of this project. I 
+then wrote a method to remove duplicate entries, capitalize everything, and gsub out special characters via REGEX.
+
+I have a script that accepts two arguments, though I'd love to move to more of a unix filter implementation. If
+a dictionary file is not provided by the user, the default is my "tidied" dictionary file.
+
+As far as the algorithm...I've been writing a lot on pencil and paper trying to come up with something that will work, 
+but in the meantime I'm having a tough time even converting each line of the phone number into the possible letter combinations,
+which has forced me to dig deeper into the String, Array, and Hash classes. Still working on something viable and hope to address
+that in future commits.
+
+If you're reading this, I look forward to any feedback and advice for getting past some of the obstacles I'm facing. Thanks!
