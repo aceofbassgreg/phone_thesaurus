@@ -24,8 +24,8 @@ class Scraper
     session.within session.all(:css, '.pagination')[0] { session.has_link? 'Next' }
     skip_ad
     sleep 2
-    too_many_words = collect_words
-    words = trim_and_clean_words(too_many_words)
+    words_from_site = collect_words
+    words = trim_and_clean_words(words_from_site)
     put_words_in_file(words)
     sleep 2
     click_next
@@ -46,10 +46,10 @@ class Scraper
   end
 
   def trim_and_clean_words(words)
-    too_many_words[4].split
+    dict_words = words[4].split
     words.delete_if {|word| word.length > 7 }             
     words.map! {|word| word.gsub(/[.,\ '&`~"$!?-]/,'')}
-    return words  
+    return dict_words  
   end
 
   def put_words_in_file(words)
