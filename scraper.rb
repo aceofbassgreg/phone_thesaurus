@@ -4,42 +4,60 @@ class Scraper
   require 'capybara'
 
   def initialize
-    @s = Scraper::Capybara::Session.new :selenium
+    @session = Scraper::Capybara::Session.new :selenium
   end
 
   def session
-    @s
+    @session
+  end
+
+  def scrape_and_restart_if_crash            # would've loved to have scrape_words end dynamically, but kept getting Selenium stale_content errors.
+    1000.times do
+      scrape_words
+    end
+  end
+
+  def scrape_words
+    visit_site
+    sleep 2
+    skip_ad
+    session.within session.all(:css, '.pagination')[0] { session.has_link? 'Next' }
+    skip_ad
+    sleep 2
+    too_many_words = collect_words
+    words = trim_and_clean_words(too_many_words)
+    put_words_in_file(words)
+    sleep 2
+    click_next
+    sleep 2
+    puts "still running!"
   end
 
   def visit_site
     session.visit 'http://www.merriam-webster.com/browse/dictionary/a/a.htm'
   end
 
-  def screenshot            # troubleshooting helper from when I was using headless browser.
-    session.driver.render('./file.png', :full => true)
+  def skip_ad
+    session.click_link 'Skip This Ad' if session.has_link? 'Skip This Ad'
   end
 
-  def scrape_words
-    sleep 2
-    session.click_link 'Skip This Ad' if session.has_link? 'Skip This Ad'
-    session.within session.all(:css, '.pagination')[0] { session.has_link? 'Next' }
-    session.click_link 'Skip This Ad' if session.has_link? 'Skip This Ad'
-    sleep 2
-    too_many_words = session.all(:xpath, "//ol['@class=entries']").collect {|word| word.text}
-    words = too_many_words[4].split
-    words.delete_if {|word| word.length > 7 }                             # not taking any words greater than 7 characters (can't
-    words.map! {|word| word.gsub(/[.,\ '&`~"$!?-]/,'')}                     # pair words > 7 anyway, keeps dictionary manageable)
-    File.open("dictionary.rb","a") {|f| f.puts(words)}
-    sleep 2
+  def collect_words
+    session.all(:xpath, "//ol['@class=entries']").collect {|word| word.text}
+  end
+
+  def trim_and_clean_words(words)
+    too_many_words[4].split
+    words.delete_if {|word| word.length > 7 }             
+    words.map! {|word| word.gsub(/[.,\ '&`~"$!?-]/,'')}
+    return words  
+  end
+
+  def put_words_in_file(words)
+    File.open("dictionary.rb","a") {|f| f.puts(words)
+  end
+
+  def click_next
     session.within session.all(:css, '.pagination')[0] { session.click_link 'Next' }
-    sleep 2
-    puts "still running!"
-  end
-
-  def repeat            # would've loved to have scrape_words end dynamically, but kept getting Selenium stale_content errors.
-    1000.times do
-      scrape_words
-    end
   end
 
   def tidy_and_store
