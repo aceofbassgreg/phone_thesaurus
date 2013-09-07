@@ -9,6 +9,8 @@ then wrote a method to remove duplicate entries, capitalize everything, and gsub
 
 I have a script that accepts two arguments. If a dictionary file is not provided by the user, the default is my "tidied" dictionary file. While in this directory, you can run ruby convert.rb <arg1 file> <arg2 file(optional)>.
 
-Next step is writing the actual converter.
+Next step is writing the actual converter. So far I'm stashing possible words in an array, then will process them further.
+
+Random files not in lib include a dictionary that contains all scraped words straight from the dictionary. The words are processed and stored as tidy_dictionary.rb, which is what my converter checks against. It also contains a phone_number.rb file which is what I'm using in the command line as I build this converter.
 
 If you're reading this, I look forward to any feedback and advice. Thanks!
