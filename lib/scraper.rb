@@ -53,7 +53,7 @@ class Scraper
   end
 
   def put_words_in_file(words)
-    File.open("dictionary.rb","a") {|f| f.puts(words)
+    File.open("dictionary.rb","a") {|f| f.puts(words)}
   end
 
   def click_next
@@ -70,4 +70,19 @@ class Scraper
     arr.uniq!.sort!
     File.open("tidy_dictionary.rb", "w") { |f| f.puts(arr) }
   end 
+
+
+  #NOTE:  couldn't get this functioning properly, but am keeping to play with at some point.
+  class HeadlessScraper < Scraper
+
+    require 'rubygems'
+    require 'capybara'
+    require 'capybara/poltergeist'
+
+    Capybara.javascript_driver = :poltergeist
+
+    Capybara.register_driver :poltergeist do |app|
+      Capybara::Poltergeist::Driver.new(app)
+    end
+  end
 end
