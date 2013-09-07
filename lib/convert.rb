@@ -38,9 +38,11 @@ File.open("#{ARGV[0]}", 'r') do |phone_numbers|
               possible_matches << word
             end
           end
+          puts possible_matches.count
           possible_matches.each do |possible_matches|
             #if statement for processing two-letter words, break of and search for five-letter words
             #if statement for eliminating three-or-more letter words based on next digit in #. keep processing...
+          end
         end
       end
     else
